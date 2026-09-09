@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InventoryBatch {
+  id                   String            @id @default(uuid())
+  ingredientName       String
+  currentQuantity      Float 
+  unit                 String 
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now())
+}
+
+
+model Recipe {
+   id            String            @id @default(uuid())
+   name          String            @unique
+   description   String?
+  
+   //Link to the intermidiate join table
+   recipeIngredients    RecipeIngredient[]  //it odesn't exist as a real database column
+
+   createdAt     DateTime          @default(now())
+   updatedAt     DateTime          @updatedAt
+}
+
+
+model RecipeIngredient {
+  id               String           @id @default(uuid())
+
+  // Link to Parent 1: Recipe
+  recipeId         String
+  recipe           Recipe           @relation(fields: [recipeId], references: [id], onDelete: Cascade) //this is not a real column in your PostgreSQL database.
+
+  // Link to Parent 2: Ingredient
+  ingredientId     String
+  ingredient       Ingredient       @relation(fields: [ingredientId], references: [id], onDelete: Cascade) //this is not a real column in your PostgreSQL database.
+  
+  //The specific business logic for this connection
+  quantityRequired  Float
+
+  // Prevent adding the exact same ingredient to the same  recipe twice
+  @@unique([recipeId, ingredientId])
+}
+
+
+model Ingredient {
+  id                    String            @id @default(uuid())
+  name                  String            @unique
+
+  //Link to the intermidiate join table
+  recipeIngredients     RecipeIngredient[] //it odesn't exist as a real database column
+
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+}
+
+
+
+
