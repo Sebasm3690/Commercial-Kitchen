@@ -74,6 +74,10 @@ export class InventoryController {
       const inventory = await this.createInventoryBatchesService.execute(
         payload.ingredientName,
         payload.currentQuantity,
+        payload.kitchenId,
+        payload.unit,
+        payload.batchNumber,
+        payload.expirationDate,
       );
       return {
         status: 'success',

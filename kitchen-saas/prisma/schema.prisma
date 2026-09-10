@@ -13,13 +13,21 @@ datasource db {
 }
 
 model InventoryBatch {
-  id                   String            @id @default(uuid())
-  ingredientName       String
-  currentQuantity      Float 
-  unit                 String 
+  id               String            @id @default(uuid())
+  ingredientName   String
+  currentQuantity  Float 
+  unit             String 
+  
+  // New Field: Tracking Ownership
+  // This tells the database exactly which kitchen this inventory belongs to.
+  kitchenId            String
+  batchNumber          String   // e.g., "RCV-2026-09-06" - Identifies the specific delivery container
+  expirationDate       DateTime
 
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now())
+
+  auditLogs            AuditLog[]
 }
 
 
@@ -64,6 +72,25 @@ model Ingredient {
 
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
+}
+
+enum AuditAction {
+  RESTOCK
+  COOKING
+  SPOILAGE
+  MANUAL_CORRECTION
+}
+
+model AuditLog {
+  id                      String            @id @default(uuid())
+  batchId                 String
+  batch                   InventoryBatch    @relation(fields: [batchId], references: [id])
+  userId                  String
+  action                  AuditAction
+  quantityChanged         Float
+  reason                  String?
+  timestamp               DateTime            @default(now())
+  
 }
 
 

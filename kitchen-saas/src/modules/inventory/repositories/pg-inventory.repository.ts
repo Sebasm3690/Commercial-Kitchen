@@ -25,12 +25,22 @@ export class PgInventoryRepository implements InventoryRepository {
     });
   }
 
-  async createInventory(name: string, quantity: number) {
+  async createInventory(
+    name: string,
+    quantity: number,
+    kitchen_id: string,
+    unit: string,
+    batchNumber: string,
+    expirationDate: Date,
+  ) {
     return this.prisma.inventoryBatch.create({
       data: {
         ingredientName: name,
         currentQuantity: quantity,
-        unit: 'KG',
+        kitchenId: kitchen_id,
+        unit: unit,
+        batchNumber: batchNumber,
+        expirationDate: expirationDate,
       },
     });
   }

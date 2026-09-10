@@ -4,17 +4,31 @@ import {
   Body,
   InternalServerErrorException,
   Get,
+  Param,
 } from '@nestjs/common';
 import { CreateRecipeService } from '../use-cases/create-recipe.service';
 import { CreateRecipeDto } from '../dtos/create-recipe.dto';
 import { GetRecipesService } from '../use-cases/get-recipes.service';
+import { DeductRecipeService } from '../use-cases/deduct-recipe.service';
 
 @Controller('recipes')
 export class RecipeController {
   constructor(
     private readonly createRecipeService: CreateRecipeService,
     private readonly getRecipeService: GetRecipesService,
+    private readonly deductRecipeService: DeductRecipeService,
   ) {}
+
+  @Post(':id/cook')
+  async cookRecipe(
+    @Param('id') recipeId: string,
+    @Body('kitchenId') kitchenId: string,
+  ) {
+    await this.deductRecipeService.execute(recipeId, kitchenId, 'user_1');
+    return {
+      message: 'Recipe successfully prepared and inventory deducted',
+    };
+  }
 
   @Post()
   async createRecipe(@Body() payload: CreateRecipeDto) {

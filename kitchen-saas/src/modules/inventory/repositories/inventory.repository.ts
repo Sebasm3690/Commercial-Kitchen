@@ -6,5 +6,9 @@ export abstract class InventoryRepository {
   abstract createInventory(
     name: string,
     quantity: number,
+    kitchenId: string,
+    unit: string,
+    batchNumber: string,
+    expirationDate: Date,
   ): Promise<InventoryBatch>;
 }

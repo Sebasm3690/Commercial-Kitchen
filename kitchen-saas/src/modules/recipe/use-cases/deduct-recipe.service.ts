@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service'; // Adjust path
+import { PrismaService } from '../../../prisma/prisma.service';
 import { KitchenGateway } from '../../events/gateways/kitchen.gateway';
 
 @Injectable()
-export class DeductRecipeUseCase {
+export class DeductRecipeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly kitchenGateway: KitchenGateway,
@@ -22,6 +22,7 @@ export class DeductRecipeUseCase {
     //Everything inside this tx block is temporary.
     //If anything goes wrong inside this bubble, it instantly undoes all the changes, like rewinding time.
     await this.prisma.$transaction(async (tx) => {
+      //tx is the same that this.prisma... but this is not permanent
       //For every ingredient we need, we ask the database to fetch the boxes from the fridge
       //We always use the oldest food first.
       for (const req of recipe.recipeIngredients) {
